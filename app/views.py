@@ -23,6 +23,21 @@ def delete():
     return jsonify(status='success')
 
 
+@app.route('/get/<string:id>', methods=['GET', ])
+def get(id):
+    file = FileMetaData.objects.get_or_404(id=id)
+    if file is not None:
+        return jsonify(status='success', file=file)
+    else:
+        return jsonify(status='error')
+
+
+# 暂时留置，日后开发
+@app.route('/download/<string:id>', methods=['GET', ])
+def download(id):
+    pass
+
+
 @app.route("/list", methods=['GET', ])
 def list():
     files = FileMetaData.objects.order_by('-createdAt')

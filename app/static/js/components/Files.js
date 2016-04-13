@@ -33,10 +33,20 @@ var Files = React.createClass({
           }
       }.bind(this));
     },
+    getFile: function(id) {
+        $.ajax({
+            type: 'get',
+            url: '/get/' + id,
+        }).done(function(resp){
+            if (resp.status == 'success') {
+                this.setState({files:[resp.file]});
+            }
+        }.bind(this));
+    },
     render: function() {
         return(
             <div>
-                <FileForm />
+                <FileForm getFile={this.getFile} getFiles={this.listFile}/>
                 <FileTable />
             </div>
         )

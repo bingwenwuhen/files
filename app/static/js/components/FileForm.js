@@ -7,9 +7,12 @@ var FileForm = React.createClass({
 
     render: function() {
         return(
-            <div>
-                hello form
-            </div>
+            <form className="input-group" onSubmit={this.handleSubmit}>
+                <input ref="content" className="form-control" id="content" name="content" type="text"/>
+                <span className="input-group-btn">
+                    <button className="btn btn-default" type="submit">Add</button>
+                </span>
+            </form>
         )
     }
 });
