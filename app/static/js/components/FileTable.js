@@ -14,3 +14,4 @@ var FileTable = React.createClass({
         )
     }
 });
+module.exports = FileTable;

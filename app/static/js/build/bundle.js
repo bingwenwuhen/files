@@ -19657,18 +19657,92 @@
 	 * Created by xiaxuan on 16/4/4.
 	 */
 	var React = __webpack_require__(1);
+	var FileForm = __webpack_require__(159);
+	var FileTable = __webpack_require__(160);
+
 
 	var Files = React.createClass({displayName: "Files",
+	    getInitialState: function() {
+	      return {
+	          files: []
+	      }
+	    },
+	    listFile: function() {
+	        $.ajax({
+	            type: 'get',
+	            url: '/list'
+	        }).done(function(resp) {
+	            if(resp.status == 'success') {
+	                this.setState({files:resp.files});
+	            }
+	        }.bind(this));
+	    },
+	    deleteFile: function(id) {
+	      $.ajax({
+	          type: 'post',
+	          url: '/url',
+	          data: {id: id}
+	      }).done(function(resp) {
+	          if (resp.status == 'success') {
+	              this.listFile();
+	          }
+	      }.bind(this));
+	    },
 	    render: function() {
 	        return(
 	            React.createElement("div", null, 
-	                "hello world"
+	                React.createElement(FileForm, null), 
+	                React.createElement(FileTable, null)
 	            )
 	        )
 	    }
 	});
 
 	module.exports = Files;
+
+/***/ },
+/* 159 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by xiaxuan on 16/4/5.
+	 */
+	var React = __webpack_require__(1);
+
+	var FileForm = React.createClass({displayName: "FileForm",
+
+	    render: function() {
+	        return(
+	            React.createElement("div", null, 
+	                "hello form"
+	            )
+	        )
+	    }
+	});
+
+	module.exports = FileForm;
+
+/***/ },
+/* 160 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by xiaxuan on 16/4/5.
+	 */
+	var React = __webpack_require__(1);
+
+
+	var FileTable = React.createClass({displayName: "FileTable",
+
+	    render: function() {
+	        return (
+	            React.createElement("div", null, 
+	                "hello table"
+	            )
+	        )
+	    }
+	});
+	module.exports = FileTable;
 
 /***/ }
 /******/ ]);

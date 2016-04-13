@@ -3,7 +3,7 @@
  */
 var React = require('react');
 
-var FilesForm = React.createClass({
+var FileForm = React.createClass({
 
     render: function() {
         return(
@@ -14,4 +14,4 @@ var FilesForm = React.createClass({
     }
 });
 
-module.exports = FilesForm;
+module.exports = FileForm;
