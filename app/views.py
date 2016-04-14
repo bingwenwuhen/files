@@ -4,8 +4,9 @@ from app import app
 from flask import request
 from flask import render_template
 from app.models import FileMetaData
+from app import db
 from flask import jsonify
-
+import json
 
 @app.route('/')
 def index():
@@ -40,7 +41,7 @@ def download(id):
 
 @app.route("/list", methods=['GET', ])
 def list():
-    files = FileMetaData.objects.order_by('-createdAt')
+    files = FileMetaData.objects[:5]
     print len(files)
     return jsonify(status='success', files=[file.to_json() for file in files])
 

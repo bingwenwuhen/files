@@ -1,26 +1,25 @@
 __author__ = 'xiaxuan'
-from app import db
+from mongoengine import StringField, IntField, DateTimeField, Document
 import datetime
 
 
-class FileMetaData(db.Document):
-    id = db.StringField(required=True)
-    name = db.StringField(required=True)
-    type = db.StringField(required=True)
-    length = db.IntField(required=True)
-    description = db.StringField(required=True)
-    createdAt = db.DateTimeField(default=datetime.datetime.now())
-    data = db.StringField(required=True)
-    url = db.StringField(required=True)
+class FileMetaData(Document):
+    type = StringField(required=True)
+    name = StringField(default=None)
+    length = IntField(required=True)
+    width = IntField(default=None)
+    height = IntField(default=None)
+    className = StringField(default=None)
+    maxLength = IntField(default=None)
+    source = StringField(default=None)
+    createdAt = DateTimeField(default=datetime.datetime.now())
+    gridfs = StringField(required=True)
+    meta = {'collection': 'FileMetaData'}
 
     def to_json(self):
         return {
-            'id': self.id,
-            'name': self.name,
+            'id': str(self.id),
             'type': self.type,
             'length': str(self.length),
-            'description': self.description,
             'createdAt': self.createdAt,
-            'data': self.data,
-            'url': self.url
         }
