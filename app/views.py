@@ -41,5 +41,6 @@ def download(id):
 @app.route("/list", methods=['GET', ])
 def list():
     files = FileMetaData.objects.order_by('-createdAt')
+    print len(files)
     return jsonify(status='success', files=[file.to_json() for file in files])
 

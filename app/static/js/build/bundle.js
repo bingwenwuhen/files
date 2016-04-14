@@ -20478,11 +20478,14 @@
 	            }
 	        }.bind(this));
 	    },
+	    componentDidMount: function() {
+	      this.listFile();
+	    },
 	    render: function() {
 	        return(
 	            React.createElement("div", null, 
 	                React.createElement(FileForm, {getFile: this.getFile, getFiles: this.listFile}), 
-	                React.createElement(FileTable, null)
+	                React.createElement(FileTable, {files: this.state.files})
 	            )
 	        )
 	    }
@@ -20535,13 +20538,31 @@
 	var FileTable = React.createClass({displayName: "FileTable",
 
 	    render: function() {
+	        var files = this.props.files.map(function(item) {
+	            return React.createElement(FileItem, null)
+	        });
 	        return (
 	            React.createElement("div", null, 
-	                React.createElement(FileItem, null)
+	                React.createElement("h2", null, "FileMetaData List"), 
+	                React.createElement("table", {className: "table"}, 
+	                   React.createElement("thead", null, 
+	                       React.createElement("tr", null, 
+	                           React.createElement("th", null, "name"), 
+	                           React.createElement("th", null, "type"), 
+	                           React.createElement("th", null, "length"), 
+	                           React.createElement("th", null, "createdAt"), 
+	                           React.createElement("th", null, "operation")
+	                       )
+	                    ), 
+	                    React.createElement("tbody", null, 
+	                        files
+	                    )
+	                )
 	            )
 	        )
 	    }
 	});
+
 	module.exports = FileTable;
 
 /***/ },

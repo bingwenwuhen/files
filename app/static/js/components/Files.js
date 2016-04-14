@@ -43,11 +43,14 @@ var Files = React.createClass({
             }
         }.bind(this));
     },
+    componentDidMount: function() {
+      this.listFile();
+    },
     render: function() {
         return(
             <div>
-                <FileForm getFile={this.getFile} getFiles={this.listFile}/>
-                <FileTable />
+                <FileForm getFile= {this.getFile} getFiles={this.listFile}/>
+                <FileTable files = {this.state.files}/>
             </div>
         )
     }
