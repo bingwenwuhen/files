@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "jsx-loader": "^0.13.2",
-    "react": "^0.14.8"
+    "react": "^0.13.3"
   },
   "devDependencies": {
     "jsx-loader": "^0.13.2"

@@ -1,4 +1,5 @@
 __author__ = 'xiaxuan'
+# coding:utf-8
 from app import app
 from flask import request
 from flask import render_template
