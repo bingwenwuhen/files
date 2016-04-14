@@ -20530,19 +20530,40 @@
 	 * Created by xiaxuan on 16/4/5.
 	 */
 	var React = __webpack_require__(1);
-
+	var FileItem = __webpack_require__(160);
 
 	var FileTable = React.createClass({displayName: "FileTable",
 
 	    render: function() {
 	        return (
 	            React.createElement("div", null, 
-	                "hello table"
+	                React.createElement(FileItem, null)
 	            )
 	        )
 	    }
 	});
 	module.exports = FileTable;
+
+/***/ },
+/* 160 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by xiaxuan on 16/4/5.
+	 */
+	var React = __webpack_require__(1);
+
+	var FileItem = React.createClass({displayName: "FileItem",
+
+	    render: function() {
+	        return (
+	            React.createElement("div", null, 
+	                "hello item"
+	            )
+	        )
+	    }
+	});
+	module.exports = FileItem;
 
 /***/ }
 /******/ ]);

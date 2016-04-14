@@ -3,7 +3,6 @@ __author__ = 'xiaxuan'
 from app import app
 from flask import request
 from flask import render_template
-from app import db
 from app.models import FileMetaData
 from flask import jsonify
 
