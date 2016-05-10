@@ -10,6 +10,7 @@ var FileItem = React.createClass({
     handlerDownload: function(id) {
        this.props.downloadFile(id);
     },
+
     render: function() {
         var t = this.props.File;
         return (

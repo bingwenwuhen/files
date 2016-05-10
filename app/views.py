@@ -33,7 +33,6 @@ def get(id):
         return jsonify(status='error')
 
 
-# 暂时留置，日后开发
 @app.route('/download/<string:id>', methods=['GET', ])
 def download(id):
     item = requests.get("http://localhost:8080/files/" + id + "/metadata").json()

@@ -19,9 +19,9 @@ class FileMetaData(Document):
 
     def to_json(self):
         return {
-            'name': str(self.name),
+            'name': (str(self.name))[0: 10] if int(len(str(self.name))) > 10 else str(self.name),
             'id': str(self.id),
             'type': self.type,
             'length': str(self.length),
-            'createdAt': self.createdAt
+            'createdAt': datetime.datetime.strftime(self.createdAt,  '%Y-%m-%d %H:%M:%S')
         }
