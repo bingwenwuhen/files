@@ -8,8 +8,8 @@ var FileTable = React.createClass({
 
     render: function() {
         var files = this.props.files.map(function(item) {
-            return <FileItem />
-        });
+            return <FileItem key={item.id} File={item} deleteFile={this.props.deleteFile} downloadFile={this.props.downloadFile}/>
+        }.bind(this));
         return (
             <div>
                 <h2>FileMetaData List</h2>

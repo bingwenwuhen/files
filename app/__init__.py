@@ -15,7 +15,7 @@ app.config['MONGODB_HOST'] = 'localhost'
 app.config['MONGODB_PORT'] = 27017
 
 
-db = connect(db='files', host='103.235.225.39', port=27021)
+db = connect(db='files', host='127.0.0.1', port=27017)
 
 from app import views
 from app import models

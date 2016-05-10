@@ -228,6 +228,9 @@
 	var queueIndex = -1;
 
 	function cleanUpNextTick() {
+	    if (!draining || !currentQueue) {
+	        return;
+	    }
 	    draining = false;
 	    if (currentQueue.length) {
 	        queue = currentQueue.concat(queue);
@@ -20471,10 +20474,21 @@
 	    getFile: function(id) {
 	        $.ajax({
 	            type: 'get',
-	            url: '/get/' + id,
+	            url: '/get/' + id
 	        }).done(function(resp){
 	            if (resp.status == 'success') {
 	                this.setState({files:[resp.file]});
+	            }
+	        }.bind(this));
+	    },
+	    downloadFile: function(id) {
+	        $.ajax({
+	            type: 'get',
+	            url: '/download/' + id
+	        }).done(function(resp){
+	            if(resp.status == 'success') {
+	                downloadUrl = resp.url + "?type=download"
+	                this.setState({url: downloadUrl});
 	            }
 	        }.bind(this));
 	    },
@@ -20484,8 +20498,9 @@
 	    render: function() {
 	        return(
 	            React.createElement("div", null, 
+	                React.createElement("iframe", {width: "0px", height: "0px", hidden: "true", src: this.state.url}), 
 	                React.createElement(FileForm, {getFile: this.getFile, getFiles: this.listFile}), 
-	                React.createElement(FileTable, {files: this.state.files})
+	                React.createElement(FileTable, {files: this.state.files, deleteFile: this.deleteFile, downloadFile: this.downloadFile})
 	            )
 	        )
 	    }
@@ -20539,8 +20554,8 @@
 
 	    render: function() {
 	        var files = this.props.files.map(function(item) {
-	            return React.createElement(FileItem, null)
-	        });
+	            return React.createElement(FileItem, {key: item.id, File: item, deleteFile: this.props.deleteFile, downloadFile: this.props.downloadFile})
+	        }.bind(this));
 	        return (
 	            React.createElement("div", null, 
 	                React.createElement("h2", null, "FileMetaData List"), 
@@ -20575,11 +20590,26 @@
 	var React = __webpack_require__(1);
 
 	var FileItem = React.createClass({displayName: "FileItem",
-
+	    handlerDelete: function(id) {
+	        this.props.deleteFile(id);
+	    },
+	    handlerDownload: function(id) {
+	       this.props.downloadFile(id);
+	    },
 	    render: function() {
+	        var t = this.props.File;
 	        return (
-	            React.createElement("div", null, 
-	                "hello item"
+	            React.createElement("tr", null, 
+	               React.createElement("td", null,  t.name), 
+	               React.createElement("td", null,  t.type), 
+	               React.createElement("td", null,  t.length), 
+	               React.createElement("td", null,  t.createdAt), 
+	               React.createElement("td", null, 
+	                   React.createElement("button", {onClick: this.handlerDelete.bind(this, t.id), className: "btn btn-danger"}, "Delete")
+	               ), 
+	                React.createElement("td", null, 
+	                   React.createElement("button", {onClick: this.handlerDownload.bind(this, t.id), className: "btn btn-danger"}, "Download")
+	               )
 	            )
 	        )
 	    }

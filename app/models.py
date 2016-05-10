@@ -14,12 +14,14 @@ class FileMetaData(Document):
     source = StringField(default=None)
     createdAt = DateTimeField(default=datetime.datetime.now())
     gridfs = StringField(required=True)
+    version = StringField(default=None)
     meta = {'collection': 'FileMetaData'}
 
     def to_json(self):
         return {
+            'name': str(self.name),
             'id': str(self.id),
             'type': self.type,
             'length': str(self.length),
-            'createdAt': self.createdAt,
+            'createdAt': self.createdAt
         }
