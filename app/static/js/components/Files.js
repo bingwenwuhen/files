@@ -36,10 +36,21 @@ var Files = React.createClass({
     getFile: function(id) {
         $.ajax({
             type: 'get',
-            url: '/get/' + id,
+            url: '/get/' + id
         }).done(function(resp){
             if (resp.status == 'success') {
                 this.setState({files:[resp.file]});
+            }
+        }.bind(this));
+    },
+    downloadFile: function(id) {
+        $.ajax({
+            type: 'get',
+            url: '/download/' + id
+        }).done(function(resp){
+            if(resp.status == 'success') {
+                downloadUrl = resp.url + "?type=download"
+                this.setState({url: downloadUrl});
             }
         }.bind(this));
     },
@@ -49,8 +60,9 @@ var Files = React.createClass({
     render: function() {
         return(
             <div>
+                <iframe width="0px" height="0px" hidden="true" src={this.state.url}></iframe>
                 <FileForm getFile= {this.getFile} getFiles={this.listFile}/>
-                <FileTable files = {this.state.files}/>
+                <FileTable files = {this.state.files} deleteFile={this.deleteFile} downloadFile={this.downloadFile}/>
             </div>
         )
     }
