@@ -24,11 +24,12 @@ def delete():
     return jsonify(status='success')
 
 
-@app.route('/get/<string:id>', methods=['GET', ])
-def get(id):
-    file = FileMetaData.objects.get_or_404(id=id)
-    if file is not None:
-        return jsonify(status='success', file=file)
+@app.route('/get/<string:name>', methods=['GET', ])
+def get(name):
+    files = FileMetaData.objects(name=name)
+    print(files[0].to_json())
+    if files is not None:
+        return jsonify(status='success', files=[file.to_json() for file in files])
     else:
         return jsonify(status='error')
 
@@ -36,13 +37,21 @@ def get(id):
 @app.route('/download/<string:id>', methods=['GET', ])
 def download(id):
     item = requests.get("http://localhost:8080/files/" + id + "/metadata").json()
-    print(item.get("url"))
     return jsonify(status='success', url=item.get("url"))
 
 
-@app.route("/list", methods=['GET', ])
-def list():
-    files = FileMetaData.objects[:5]
-    print(len(files))
+@app.route("/list/<string:index>", methods=['GET', ])
+def list(index):
+    if int(index) == 0:
+        files = FileMetaData.objects[:5]
+    else:
+        start = (int(index) - 1)*5
+        files = FileMetaData.objects[start:5]
     return jsonify(status='success', files=[file.to_json() for file in files])
+
+
+@app.route("/count", methods=['GET', ])
+def count():
+    count = len(FileMetaData.objects)
+    return jsonify(status='success', count=count)
 

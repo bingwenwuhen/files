@@ -20442,7 +20442,7 @@
 	var React = __webpack_require__(1);
 	var FileForm = __webpack_require__(158);
 	var FileTable = __webpack_require__(159);
-
+	var Pager = __webpack_require__(161);
 
 	var Files = React.createClass({displayName: "Files",
 	    getInitialState: function() {
@@ -20450,10 +20450,10 @@
 	          files: []
 	      }
 	    },
-	    listFile: function() {
+	    listFile: function(index) {
 	        $.ajax({
 	            type: 'get',
-	            url: '/list'
+	            url: '/list/' + index
 	        }).done(function(resp) {
 	            if(resp.status == 'success') {
 	                this.setState({files:resp.files});
@@ -20467,17 +20467,18 @@
 	          data: {id: id}
 	      }).done(function(resp) {
 	          if (resp.status == 'success') {
-	              this.listFile();
+	              this.listFile(0);
 	          }
 	      }.bind(this));
 	    },
-	    getFile: function(id) {
+	    getFile: function(name) {
 	        $.ajax({
 	            type: 'get',
-	            url: '/get/' + id
+	            url: '/get/' + name
 	        }).done(function(resp){
 	            if (resp.status == 'success') {
-	                this.setState({files:[resp.file]});
+	                console.table(resp.files)
+	                this.setState({files:resp.files});
 	            }
 	        }.bind(this));
 	    },
@@ -20492,15 +20493,45 @@
 	            }
 	        }.bind(this));
 	    },
+	    getCount: function() {
+	        $.ajax({
+	            type: 'get',
+	            url: '/count'
+	        }).done(function(resp){
+	            if(resp.status=='success') {
+	                this.setState({TotalCount: resp.count, PageSize: 5, PageIndex: 0});
+	            }
+	        }.bind(this));
+	    },
+	    pageIndexChanged: function(index) {
+	      this.listFile(index);
+	        this.setState({PageIndex: index +1})
+	    },
 	    componentDidMount: function() {
-	      this.listFile();
+	      this.listFile(0);
+	      this.getCount();
 	    },
 	    render: function() {
+	         var pagerSetting={
+	            totalCount:this.state.TotalCount,
+	            pageSize: this.state.PageSize,
+	            pageIndex:this.state.PageIndex,
+	            firstText:"HOME" ,
+	            prevText:"prev",
+	            nextText:"next",
+	            lastText:"last",
+	            recordTextFormat: "{0}/{1} page total {2} record",
+	            //showLinkNum:2,
+	            callBack:this.pageIndexChanged
+	        };
 	        return(
 	            React.createElement("div", null, 
 	                React.createElement("iframe", {width: "0px", height: "0px", hidden: "true", src: this.state.url}), 
-	                React.createElement(FileForm, {getFile: this.getFile, getFiles: this.listFile}), 
-	                React.createElement(FileTable, {files: this.state.files, deleteFile: this.deleteFile, downloadFile: this.downloadFile})
+	                React.createElement(FileForm, {getFile: this.getFile}), 
+	                React.createElement(FileTable, {files: this.state.files, deleteFile: this.deleteFile, downloadFile: this.downloadFile}), 
+	                React.createElement("div", {className: "panel-body"}, 
+	                     React.createElement(Pager, React.__spread({},  pagerSetting))
+	                )
 	            )
 	        )
 	    }
@@ -20616,6 +20647,168 @@
 	    }
 	});
 	module.exports = FileItem;
+
+/***/ },
+/* 161 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by Administrator on 2016/5/11.
+	 */
+	var React = __webpack_require__(1);
+	var PagerLink = __webpack_require__(162);
+
+	var Pager = React.createClass({displayName: "Pager",
+	    getInitialState: function() {
+	        return {
+	            goIndex:''
+	        };
+	    },
+	    getDefaultProps: function() {
+	        return {
+	            totalCount:0,
+	            firstText:'First',
+	            prevText:'Prev',
+	            nextText:'Next',
+	            lastText:'Last',
+	            showLinkNum:10 ,//��������С��0�����֣���ô������ʾ���ֱ�ǩ
+	            alwaysShow:true,//����ҳ��ֻ��һҳʱ�Ƿ���ʾ
+	            goWidth:50,//��ת�������Ŀ���
+	            recordTextFormat: '{0}/{1}' //{0}��Ӧ��ǰҳ {1}��Ӧ��ҳ�� {2}��Ӧ�ܼ�¼�� ������ϣ����ʾ�˲������ݣ����˲��ָ���ֵ
+	        };
+	    },
+	    callBack:function(index){
+	        this.props.callBack(index);
+	    },
+	    getPageLink: function(p){
+	        return React.createElement(PagerLink, {key: p.Key, text: p.Text, index: p.Index, className: p.ClassName, callBack: this.callBack});
+	    },
+	    goIndexChanged:function(e){
+	        var n = parseInt(e.target.value);
+	        var v='';
+	        if(!isNaN(n)&&n>0){
+	            v= Math.min(n,this.getTotalPages())+'';
+	        }
+	        this.setState({goIndex:v});
+	    },
+	    getTotalPages:function(){
+	        return Math.ceil(this.props.totalCount / this.props.pageSize);
+	    },
+	    goClicked:function(){
+	        var idx = ~~this.state.goIndex -1;
+	        if(idx>=0&& idx!=this.props.pageIndex){
+	            this.callBack(idx);
+	            this.setState({goIndex:''});
+	        }
+	    },
+	    render: function() {
+	        var display='';
+	        if(!this.props.alwaysShow || this.props.totalCount == 0){
+	            display = this.props.totalCount<=this.props.pageSize?'none':'';
+	        }
+	        var totalPages = this.getTotalPages();
+	        var arr=[];
+	        var prevDisplay = 0==this.props.pageIndex?'disabled':'';
+	        var lastDisplay = totalPages-1==this.props.pageIndex?'disabled':'';
+	        arr.push(
+	            this.getPageLink({
+	                Key : "F",
+	                Text :  this.props.firstText,
+	                Index : 0,
+	                ClassName : prevDisplay
+	            })
+	        );
+	        arr.push(
+	            this.getPageLink({
+	                Key : "P",
+	                Text :  this.props.prevText,
+	                Index : Math.max(this.props.pageIndex - 1,0),
+	                ClassName : prevDisplay
+	            })
+	        );
+	        if(this.props.showLinkNum > 0){
+	            //PageIndex��0��ʼ����
+	            var startIndex = ~~(this.props.pageIndex / this.props.showLinkNum) * this.props.showLinkNum;
+	            var endIndex = Math.min(startIndex + this.props.showLinkNum,totalPages);
+	            for(var i=startIndex;i<endIndex;i++){
+	                arr.push(
+	                    this.getPageLink({
+	                        Key : i,
+	                        Text :  i + 1,
+	                        Index : i,
+	                        ClassName : i==this.props.pageIndex?'active':''
+	                    })
+	                );
+	            }
+	        }
+	        arr.push(
+	            this.getPageLink({
+	                Key : "N",
+	                Text :  this.props.nextText,
+	                Index : Math.min(this.props.pageIndex + 1,totalPages - 1),
+	                ClassName : lastDisplay
+	            })
+	        );
+	        arr.push(
+	            this.getPageLink({
+	                Key : "L",
+	                Text :  this.props.lastText,
+	                Index : totalPages - 1,
+	                ClassName : lastDisplay
+	            })
+	        );
+	        if(totalPages>this.props.showLinkNum){//��ʾ������ת������
+	            arr.push(
+	                React.createElement("li", {key: "G"}, 
+	                    React.createElement("div", {className: "input-group", style: {display:'inline-block',float:'left'}}, 
+	                        React.createElement("input", {type: "text", className: "form-control", maxLength: (totalPages+"").length, value: this.state.goIndex, onChange: this.goIndexChanged, style: {width:this.props.goWidth}}), 
+	                        React.createElement("span", {className: "input-group-btn", style: {display:'inline-block'}}, 
+	                            React.createElement("button", {className: "btn btn-default", onClick: this.goClicked, type: "button"}, "Go")
+	                        )
+	                    )
+	                )
+	            );
+	        }
+	        if(this.props.recordTextFormat.length>0){//��ʾ�ı�
+	            arr.push(
+	                React.createElement("li", {key: "T", style: {marginLeft:5}}, 
+	                    React.createElement("span", null, this.props.recordTextFormat.replace(/\{0\}/g, this.props.pageIndex + 1)
+	                    .replace(/\{1\}/g, totalPages).replace(/\{2\}/g, this.props.totalCount))
+	                )
+	            );
+	        }
+	        return (
+	            React.createElement("ul", {className: "pagination", style: {margin: '0px 0px',display:display}}, 
+	                arr
+	            )
+	        );
+	    }
+	});
+	module.exports=Pager;
+
+/***/ },
+/* 162 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by Administrator on 2016/5/11.
+	 */
+	var React = __webpack_require__(1);
+	var PagerLink = React.createClass({displayName: "PagerLink",
+	    clickEvent:function(){
+	        if(this.props.className.indexOf('disabled')<0 && this.props.className.indexOf('active')<0){
+	            console.log(this.props.index)
+	            this.props.callBack(this.props.index);
+	        }
+	    },
+	    render: function() {
+	        return (
+	            React.createElement("li", {className: this.props.className, onClick: this.clickEvent}, React.createElement("a", {href: "javascript:void(0)"}, this.props.text))
+	        );
+	    }
+	});
+	module.exports=PagerLink;
+
 
 /***/ }
 /******/ ]);
